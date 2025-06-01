@@ -1,0 +1,245 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPE: Peru & Brazil - SDG 7.2</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div class="container">
+                <img src="sdg_logo.png" alt="Sustainable Development Goals">
+                <h3><strong>SDG 7: Affordable and Clean Energy</strong> - Target 7.2: Increase substantially the share of renewable energy in the global energy mix.</h3>
+            </div>
+        </div>
+        <div class="header-middle">
+            <div class="container">
+                <h1>Clean Energy for a Sustainable Tomorrow</h1>
+                <p>Energy decisions impact not only our climate, but also the survival of wildlife and ecosystems. Are we choosing wisely?</p>
+            </div>
+        </div>
+        <div class="header-bottom">
+            <div class="container">
+                <p>
+                    In Peru and Brazil, the push for renewable energy is vital to combat climate change and protect rich biodiversity.
+                    Our project explores how clean energy can power progress without harming the ecosystems that support Indigenous communities and endangered species.
+                    That’s why we created an interactive word search that turns key concepts into an engaging game—making learning simple, fun, and relevant.
+                    <br><br>
+                    <strong>Let’s connect energy and ecology for a cleaner and more just future in Peru and Brazil!</strong>
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section id="game-section">
+                <h2>Word Search Challenge: Renewable Energy</h2>
+                <p>Find the following ten words in the grid: <strong>BIODIVERSITY, HYDROPOWER, SOLAR, DEFORESTATION, METHANE, WILDLIFE, TRANSITION, INDIGENOUS, RENEWABLE, EQUITY</strong>. Once you find a word, its fun fact will appear below.</p>
+                <div id="word-search-container">
+                    <div id="word-search-grid"></div>
+                </div>
+                <div id="word-list">
+                    <h4>Words You Have Found</h4>
+                    <ul>
+                        <li data-word="BIODIVERSITY">
+                            <div class="fact">
+				                <p><strong><span class="keyword">Biodiversity</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>The variety of living species on Earth—including plants, animals, bacteria, and fungi, especially important in ecosystems like the Amazon.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>In Peru, biodiversity is threatened by poorly planned hydropower projects that disrupt the habitats of species like the Andean bear or Amazonian manatee.</em></li>
+                                    <li><em>In Brazil, deforestation linked to fossil fuel extraction has reduced forest connectivity, affecting jaguars and pink river dolphins.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="HYDROPOWER">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Hydropower</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>Energy generated by harnessing the power of flowing or falling water, often through dams.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>The proposed Chadín 2 dam in Peru would flood biodiverse valleys and displace Indigenous communities.</em></li>
+                                    <li><em>In Brazil, the Belo Monte dam has disrupted traditional fishing and increased deforestation in the Xingu River basin.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="SOLAR">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Solar</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>A form of renewable energy that captures sunlight and converts it into electricity.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>Peru installed solar systems in highland dairy farms to reduce diesel pollution in 2024.</em></li>
+                                    <li><em>Brazil’s “Mais Luz para a Amazônia” initiative installs solar microgrids in isolated forest communities.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="DEFORESTATION">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Deforestation</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>The clearing or thinning of forests by humans, often to make way for agriculture or infrastructure.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>Illegal gold mining in Madre de Dios caused the loss of 6,020 hectares of primary forest in 2024.</em></li>
+                                    <li><em>Brazil accounted for over 50% of all Amazon deforestation linked to extractive industries in 2024.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="METHANE">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Methane</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>A potent greenhouse gas emitted during the decomposition of organic material, particularly in flooded areas.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>Hydroelectric reservoirs in Peru and Brazil emit methane due to submerged vegetation breaking down anaerobically.</em></li>
+                                    <li><em>This undermines the classification of hydropower as a fully “clean” energy source.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="WILDLIFE">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Wildlife</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>Animals that live and grow in natural conditions, not under human control.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>In Peru, wind farms risk collisions with condors and flamingos near wetlands.</em></li>
+                                    <li><em>In Brazil, energy infrastructure threatens fish migration and Indigenous hunting traditions.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="TRANSITION">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Transition</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>The process of shifting from one energy system (fossil fuels) to a more sustainable one (renewables).</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>Peru’s energy transition aims to reduce oil spills like those in Loreto in 2025.</em></li>
+                                    <li><em>Brazil’s energy programs like LPT and MLA illustrate challenges in reaching remote populations equitably.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="INDIGENOUS">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Indigenous</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>Refers to the original peoples of a region, often with distinct cultural and ecological relationships to the land.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>Peruvian Indigenous groups suffered water loss due to oil spills and were not consulted on energy projects.</em></li>
+                                    <li><em>Brazilian Indigenous communities face cultural disruption from large hydroelectric dams.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="RENEWABLE">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Renewable</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>Energy from sources that are naturally replenished, like solar, wind, or small-scale hydro.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>In Peru, renewables power schools and agricultural facilities in rural areas.</em></li>
+                                    <li><em>Brazil’s decentralized renewable systems offer clean electricity to forest communities.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li data-word="EQUITY">
+                            <div class="fact">
+                                <p><strong><span class="keyword">Equity</span></strong></p>
+                                <strong>Definition:</strong>
+                                <p>Fair and just inclusion in planning and decision-making, especially for marginalized groups.</p>
+                                <strong>Example:</strong>
+                                <ul>
+                                    <li><em>In Peru, stronger legal enforcement is needed to protect natural areas and Indigenous rights during energy expansion.</em></li>
+                                    <li><em>In Brazil, co-designed microgrids are key to ensuring energy equity in Amazonia.</em></li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+<hr>
+            <section id="resources">
+		<img src="renewable_energy.jpg" alt="Wildlife in energy landscape" class="intro-image">
+                <h2>Learn More About Clean Energy and Biodiversity</h2>
+                <p>Check out these resources to discover how renewable energy can power a sustainable future:</p>
+                <ul>
+                    <li><a href="https://www.solarenergy.org/courses/introduction-to-renewable-energy/" target="_blank">RE100: Introduction to Renewable Energy - Solar Energy International</a></li>
+                    <li><a href="https://www.open.edu/openlearn/nature-environment/environmental-studies/climate-change-and-renewable-energy/content-section--glossary#idm1136" target="_blank">Climate change and renewable energy - OpenLearn</a></li>
+                    <li><a href="https://academic.oup.com/ce" target="_blank">Clean Energy – Oxford Academic</a></li>
+                    <li><a href="https://whc.unesco.org/en/renewable-energy/" target="_blank">UNESCO Education Resources</a></li>
+                </ul>
+            </section>
+
+            <section id="call-to-action">
+                <h4>Power the Change!</h4>
+                <p>Share this page to raise awareness about the urgent need for clean energy that protects both people and wildlife. Let’s make SDG 7 a reality together.</p>
+                <button onclick="sharePage()">Share Now</button>
+            </section>
+        </div>
+    </main>
+
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <p id="popup-text"></p>
+            <button id="continue-btn">Continue</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>Created by <strong>Abel Fernandez</strong>, <strong>Rebeca Espinoza</strong>, <strong>David Simeón</strong>, <strong>Pietro Meza</strong> and <strong>Livia Pereira</strong> <br>
+            in support of SDG 7 – Affordable and Clean Energy</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
